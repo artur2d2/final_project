@@ -16,10 +16,10 @@
         {% for stock in stocks %}
         <tr style="border-bottom:1pt solid black">
             <td>{{stock["symbol"]}}</td>
-            <td>{{stock["name"]}}</td>
+            <td>{{stock["name"]}} = &#x13000</td>
             <td>{{stock["shares"]}}</td>
-            <td>{{usd(stock["price"])}}</td>
-            <td>{{usd(stock["total"])}}</td>
+            <td>{{stock["price"]}}</td>
+            <td>{{stock["total"]}}</td>
         </tr>
         {% endfor %}
         <tr>
@@ -27,14 +27,14 @@
             <td></td>
             <td></td>
             <td></td>
-            <td>{{usd(cash[0]["cash"])}}</td>
+            <td></td>
         </tr>
         <tr>
             <th>TOTAL_CASH</th>
             <td></td>
             <td></td>
             <td></td>
-            <td>{{usd(total_cash)}}</td>
+            <td>{{total_cash}}</td>
         </tr>
     </table>
 {% endblock %}
