@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Index
+{% endblock %}
+
+{% block main %}
+    <table style="width:100%" style="overflow:auto">
+        <tr style="border-bottom:1pt solid black">
+            <th>Symbol</th>
+            <th>Name</th>
+            <th>Shares</th>
+            <th>Price</th>
+            <th>Total</th>
+        </tr>
+        {% for stock in stocks %}
+        <tr style="border-bottom:1pt solid black">
+            <td>{{stock["symbol"]}}</td>
+            <td>{{stock["name"]}}</td>
+            <td>{{stock["shares"]}}</td>
+            <td>{{usd(stock["price"])}}</td>
+            <td>{{usd(stock["total"])}}</td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <th>CASH</th>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>{{usd(cash[0]["cash"])}}</td>
+        </tr>
+        <tr>
+            <th>TOTAL_CASH</th>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>{{usd(total_cash)}}</td>
+        </tr>
+    </table>
+{% endblock %}
