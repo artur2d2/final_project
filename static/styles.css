@@ -43,4 +43,5 @@ main td
 {
     /* left-align tables' cells */
     text-align: left;
+    font-size: 200%;
 }

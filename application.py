@@ -34,14 +34,15 @@ db = SQL("sqlite:///project.db")
 ## Routes go here
 # A route should be of the form
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 @login_required
 def index():
-    stocks = []
-    hiero = chr(0x13000)
-    STOCK_DIC = {"name": hiero}
-    stocks.append(STOCK_DIC)
-    return render_template("index.html", stocks=stocks)
+    
+    if request.method == "POST":
+        hiero = chr(0x13000)
+        return render_template("translation.html", hiero=hiero)
+    else:
+        return render_template("index.html")
     
 # where "project/templates/index.html" is a file created automatically by Pagedraw.
 # Within the respective Pagedraw document, you can do {{ name }} which will print 'Garfunkel'
