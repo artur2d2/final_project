@@ -39,7 +39,14 @@ db = SQL("sqlite:///project.db")
 def index():
     
     if request.method == "POST":
-        hiero = chr(0x13000)
+        if not request.form.get("phonogram"):
+            return render_template("index.html")
+        
+        sequence = request.form.get("phonogram")
+        sequence = sequence.replace(",", "")
+        sequence = sequence.split(" ")
+        hiero = db.execute("SELECT * FROM characters WHERE (letter LIKE :sq)", sq=sequence[0])
+        hiero = chr(int (hiero[0]["character"], 0))
         return render_template("translation.html", hiero=hiero)
     else:
         return render_template("index.html")
