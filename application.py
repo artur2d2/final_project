@@ -42,12 +42,17 @@ def index():
         if not request.form.get("phonogram"):
             return render_template("index.html")
         
+        dictio = []
         sequence = request.form.get("phonogram")
         sequence = sequence.replace(",", "")
         sequence = sequence.split(" ")
-        hiero = db.execute("SELECT * FROM characters WHERE (letter LIKE :sq)", sq=sequence[0])
-        hiero = chr(int (hiero[0]["character"], 0))
-        return render_template("translation.html", hiero=hiero)
+        for i in range(sequence.len()):
+            hiero = db.execute("SELECT * FROM characters WHERE (letter LIKE :sq)", sq=sequence[i])
+            for j in range(hiero.len()):
+                hieroglyph = chr(int (hiero[j]["character"], 0)
+                dictio.append([])
+                dictio[j].append(hieroglyph)
+        return render_template("translation.html", hieroglyphs=dictio)
     else:
         return render_template("index.html")
     

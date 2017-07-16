@@ -5,5 +5,7 @@
 {% endblock %}
 
 {% block main %}
-<h1>{{hiero}}</h1>
+{% for hieroglph in hieroglphs %}
+<h1>{{hieroglyph}}</h1>
+{% endfor %}
 {% endblock %}
