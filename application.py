@@ -6,6 +6,7 @@ from tempfile import gettempdir
 from datetime import datetime
 
 from helpers import *
+import numpy
 
 # configure application
 app = Flask(__name__)
@@ -42,17 +43,17 @@ def index():
         if not request.form.get("phonogram"):
             return render_template("index.html")
         
-        dictio = []
+        translations = []
         sequence = request.form.get("phonogram")
         sequence = sequence.replace(",", "")
         sequence = sequence.split(" ")
-        for i in range(sequence.len()):
-            hiero = db.execute("SELECT * FROM characters WHERE (letter LIKE :sq)", sq=sequence[i])
-            for j in range(hiero.len()):
+        
+        for j in range(2):
+            for i in range(sequence.len()):
+                hiero = db.execute("SELECT * FROM characters WHERE (letter LIKE :sq)", sq=sequence[i])
                 hieroglyph = chr(int (hiero[j]["character"], 0)
-                dictio.append([])
-                dictio[j].append(hieroglyph)
-        return render_template("translation.html", hieroglyphs=dictio)
+                translations[i][j].append(hieroglyph)
+        return render_template("translation.html", hieroglyphs=translations)
     else:
         return render_template("index.html")
     
