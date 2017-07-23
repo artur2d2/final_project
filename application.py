@@ -2,14 +2,14 @@ from cs50 import SQL
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 from flask_session import Session
 from passlib.apps import custom_app_context as pwd_context
-from tempfile import gettempdir
-from datetime import datetime
+from tempfile import mkdtemp
 
 from helpers import *
-import numpy
 
 # configure application
 app = Flask(__name__)
+
+app.jinja_env.globals.update(usd=usd)
 
 # ensure responses aren't cached
 if app.config["DEBUG"]:
@@ -24,16 +24,13 @@ if app.config["DEBUG"]:
 app.jinja_env.filters["usd"] = usd
 
 # configure session to use filesystem (instead of signed cookies)
-app.config["SESSION_FILE_DIR"] = gettempdir()
+app.config["SESSION_FILE_DIR"] = mkdtemp()
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 # configure CS50 Library to use SQLite database
 db = SQL("sqlite:///project.db")
-
-## Routes go here
-# A route should be of the form
 
 @app.route("/", methods=["GET", "POST"])
 @login_required
@@ -43,22 +40,28 @@ def index():
         if not request.form.get("phonogram"):
             return render_template("index.html")
         
-        translations = []
+        translation = []
+        translation2 = []
+        string = ""
+        hieroglyph = 0
         sequence = request.form.get("phonogram")
         sequence = sequence.replace(",", "")
         sequence = sequence.split(" ")
+        length = len(sequence)
         
-        for j in range(2):
-            for i in range(sequence.len()):
-                hiero = db.execute("SELECT * FROM characters WHERE (letter LIKE :sq)", sq=sequence[i])
-                hieroglyph = chr(int (hiero[j]["character"], 0)
-                translations[i][j].append(hieroglyph)
-        return render_template("translation.html", hieroglyphs=translations)
+        
+        for i in range(length):
+            hiero_row = db.execute("SELECT * FROM characters WHERE (letter LIKE :sq)", sq=sequence[i])
+            hieroglyph = int (hiero_row[0]["character"], 0)
+            translation.append(hieroglyph)
+            hiero_row = None
+        
+        for j in range(length):
+            translation2.append(chr(translation[j]))
+            
+        return render_template("translation.html", hieroglyphs=translation2)
     else:
         return render_template("index.html")
-    
-# where "project/templates/index.html" is a file created automatically by Pagedraw.
-# Within the respective Pagedraw document, you can do {{ name }} which will print 'Garfunkel'
 
 @app.route("/buy", methods=["GET", "POST"])
 @login_required
