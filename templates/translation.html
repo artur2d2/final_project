@@ -5,7 +5,12 @@
 {% endblock %}
 
 {% block main %}
-    {% for hieroglyph in hieroglyphs %}
-        <h1>{{hieroglyph}}</h1>
-    {% endfor %}
+<h1>
+    Translation
+</h1>
+    <p>
+        {% for hieroglyph in hieroglyphs %}
+        <sub>{{hieroglyph}}</sub>
+        {% endfor %}
+    </p>
 {% endblock %}

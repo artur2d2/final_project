@@ -46,14 +46,16 @@ def index():
         hieroglyph = 0
         sequence = request.form.get("phonogram")
         sequence = sequence.replace(",", "")
-        sequence = sequence.split(" ")
         length = len(sequence)
         
         
-        for i in range(length):
-            hiero_row = db.execute("SELECT * FROM characters WHERE (letter LIKE :sq)", sq=sequence[i])
-            hieroglyph = int (hiero_row[0]["character"], 0)
-            translation.append(hieroglyph)
+        for i in range(0, length):
+            hiero_row = db.execute("SELECT * FROM characters WHERE (letter LIKE :sq)", sq=sequence[i]+"%")
+            if hiero_row:
+                hieroglyph = int (hiero_row[0]["character"], 0)
+                translation.append(hieroglyph)
+            else:
+                return apology("One of the characters isn't in the dictionary")
             hiero_row = None
         
         for j in range(length):

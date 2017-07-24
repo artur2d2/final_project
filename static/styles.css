@@ -49,5 +49,11 @@ main td
 h1
 {
     text-align: center;
-    font-size : 200%;
+    font-size: 400%;
+}
+
+p
+{
+    text-align: center;
+    font-size : 500%;
 }
