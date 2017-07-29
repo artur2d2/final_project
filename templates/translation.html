@@ -8,9 +8,7 @@
 <h1>
     Translation
 </h1>
-    <p>
-        {% for hieroglyph in hieroglyphs %}
-        <sub>{{hieroglyph}}</sub>
-        {% endfor %}
-    </p>
+    {% for hieroglyph in hieroglyphs %}
+    <p>{{hieroglyph}}</p>
+    {% endfor %}
 {% endblock %}

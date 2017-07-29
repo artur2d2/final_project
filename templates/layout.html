@@ -38,9 +38,6 @@
                     <div class="collapse navbar-collapse" id="navbar">
                         {% if session.user_id %}
                             <ul class="nav navbar-nav">
-                                <li><a href="{{ url_for('quote') }}">Quote</a></li>
-                                <li><a href="{{ url_for('buy') }}">Buy</a></li>
-                                <li><a href="{{ url_for('sell') }}">Sell</a></li>
                                 <li><a href="{{ url_for('history') }}">History</a></li>
                                 <li><a href="{{url_for('password_change')}}">Password_change</a></li>
                             </ul>

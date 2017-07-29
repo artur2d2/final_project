@@ -42,76 +42,47 @@ def index():
         
         translation = []
         translation2 = []
+        translation3 = [""]
         string = ""
         hieroglyph = 0
         sequence = request.form.get("phonogram")
         sequence = sequence.replace(",", "")
         length = len(sequence)
-        
-        
-        for i in range(0, length):
+        letter_ch = 0
+        i = 0
+        while i < length:
             hiero_row = db.execute("SELECT * FROM characters WHERE (letter LIKE :sq)", sq=sequence[i]+"%")
             if hiero_row:
-                hieroglyph = int (hiero_row[0]["character"], 0)
-                translation.append(hieroglyph)
+                if hiero_row[0]["character"] == "0x1337F":
+                    hieroglyph = int (hiero_row[0]["character"], 0)
+                    translation.append(hieroglyph)
+                    letter_ch += 1
+                    i += 2
+                else:
+                    hieroglyph = int (hiero_row[0]["character"], 0)
+                    translation.append(hieroglyph)
+                    i += 1
             else:
                 return apology("One of the characters isn't in the dictionary")
             hiero_row = None
         
-        for j in range(length):
-            translation2.append(chr(translation[j]))
-            
-        return render_template("translation.html", hieroglyphs=translation2)
+        if letter_ch >= 1:
+            for j in range(length - letter_ch):
+                translation2.append(chr(translation[j]))
+        else:
+            for j in range(length):
+                translation2.append(chr(translation[j]))
+        
+        translation2 = " ".join(translation2)
+        translation3.append(translation2)
+        translation = None
+        translation2 = None
+        db.execute("INSERT INTO history (id, phonogram) VALUES (:id, :phonogram)", id=session["user_id"], phonogram= request.form.get("phonogram"))
+        
+        return render_template("translation.html", hieroglyphs=translation3)
     else:
         return render_template("index.html")
 
-@app.route("/buy", methods=["GET", "POST"])
-@login_required
-def buy():
-    """Buy shares of stock."""
-    
-    # if user reached route via POST (as by submitting a form via POST)
-    if request.method =="POST":
-        
-        # ensure stock_symbol and number of shares were submitted
-        if not request.form.get("stock_symbol") and not request.form.get("shares"):
-            return apology("must provide stock_symbol and number of shares")
-        
-        # ensure stock_symbol was submitted
-        elif not request.form.get("stock_symbol"):
-            return apology("must provide stock_symbol")
-        
-        # ensure number of shares was submitted    
-        elif not request.form.get("shares"):
-            return apology("must provide number of shares")
-        
-        # ensure number of shares is greater than cero
-        elif int(request.form.get("shares")) < 1:
-            return apology("must provide a positive number for number of shares")
-            
-        # assignment of stock_symbol to stock
-        stock = lookup(request.form.get("stock_symbol"))
-        
-        # money result of buying shares
-        money_buy = int(request.form.get("shares")) * stock["price"]
-        
-        # rendering of quoted page with name, price and symbol
-        if stock:
-            row = db.execute("SELECT cash FROM users WHERE id=:id", id = session["user_id"])
-            if money_buy <= row[0]["cash"]:
-                db.execute("INSERT INTO history (id, symbol, name, shares, price) VALUES (:id, :symbol, :name, :shares, :price)", id=session["user_id"], symbol= stock["symbol"], name=stock["name"], shares=request.form.get("shares"), price=stock["price"])
-                db.execute("UPDATE users SET cash = :cash_row - :money_buy WHERE id=:id", cash_row= row[0]["cash"], money_buy= money_buy, id=session["user_id"])
-                
-                # redirect user to home page
-                return redirect(url_for("index"))
-            else:
-                return apology("shares bought exceeds user's available cash")
-        else:
-            return apology("stock_symbol doesn't exist")    
-    
-    # else if user reached route via GET (as by clicking a link or via redirect)
-    else:    
-        return render_template("buy.html")
 
 @app.route("/history")
 @login_required
@@ -119,8 +90,8 @@ def history():
     """Show history of transactions."""
     
      # selection of name, symbol, shares and cash of user stocks
-    stocks = db.execute("SELECT * FROM history WHERE id=:id", id = session["user_id"])
-    return render_template("history.html", stocks=stocks)
+    hist = db.execute("SELECT * FROM history WHERE id=:id", id = session["user_id"])
+    return render_template("history.html", hist=hist)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -166,31 +137,6 @@ def logout():
 
     # redirect user to login form
     return redirect(url_for("login"))
-
-@app.route("/quote", methods=["GET", "POST"])
-@login_required
-def quote():
-    """Get stock quote."""
-    
-    # if user reached route via POST (as by submitting a form via POST)
-    if request.method == "POST":
-        
-        # ensure stock_symbol was submitted
-        if not request.form.get("stock_symbol"):
-            return apology("must sumbmit a stock_symbol")
-        
-        # assignment of stock_symbol to quote
-        quote = lookup(request.form.get("stock_symbol"))
-        
-        # rendering of quoted page with name, price and symbol
-        if quote:
-            return render_template("quoted.html", quote=quote)
-        else:
-            return apology("stock_symbol doesn't exist")
-    
-    # else if user reached route via GET (as clicking a link or via redirect)
-    else:        
-        return render_template("quote.html")
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -244,58 +190,6 @@ def register():
     # else if user reached route via GET (as by clicking a link or via redirect)    
     else:
         return render_template("register.html")
-
-@app.route("/sell", methods=["GET", "POST"])
-@login_required
-def sell():
-    """Sell shares of stock."""
-    
-    # if user reached route via POST (as by submitting a form via POST)
-    if request.method =="POST":
-        
-        # ensure stock_symbol and number of shares were submitted
-        if not request.form.get("stock_symbol") and not request.form.get("shares"):
-            return apology("must provide stock_symbol and number of shares")
-        
-        # ensure stock_symbol was submitted
-        elif not request.form.get("stock_symbol"):
-            return apology("must provide stock_symbol")
-        
-        # ensure number of shares was submitted    
-        elif not request.form.get("shares"):
-            return apology("must provide number of shares")
-        
-        # ensure number of shares is greater than cero
-        elif int(request.form.get("shares")) < 1:
-            return apology("must provide a positive number for number of shares")
-            
-        # assignment of stock_symbol to stock
-        stock = lookup(request.form.get("stock_symbol"))
-        
-        # money result of buying shares
-        money_sell = int(request.form.get("shares")) * stock["price"]
-        
-        # negative value of shares sold
-        neg_shares = - int(request.form.get("shares"))
-        
-        # rendering of quoted page with name, price and symbol
-        if stock:
-            row = db.execute("SELECT name, symbol, SUM(shares) AS shares FROM history WHERE id=:id AND symbol=:symbol GROUP BY name", id = session["user_id"], symbol=request.form.get("stock_symbol"))
-            row2 = db.execute("SELECT cash FROM users WHERE id=:id", id = session["user_id"])
-            if int(request.form.get("shares")) <= row[0]["shares"]:
-                db.execute("INSERT INTO history (id, symbol, name, shares, price) VALUES (:id, :symbol, :name, :shares, :price)", id=session["user_id"], symbol= stock["symbol"], name=stock["name"], shares=neg_shares, price=stock["price"])
-                db.execute("UPDATE users SET cash = :cash_row + :money_sell WHERE id=:id", cash_row= row2[0]["cash"], money_sell= money_sell, id=session["user_id"])
-                
-                # redirect user to home page
-                return redirect(url_for("index"))
-            else:
-                return apology("shares sold exceeds user's available shares")
-        else:
-            return apology("stock_symbol doesn't exist")    
-    
-    # else if user reached route via GET (as by clicking a link or via redirect)
-    else:    
-        return render_template("sell.html")
         
 @app.route("/password_change", methods=["GET", "POST"])
 @login_required

@@ -39,11 +39,22 @@ main img
     max-width: 100%;
 }
 
+main th
+{
+    text-align: center;
+}
+
+main tr
+{
+    text-align: center;
+    font-size: 100%;
+}
+
 main td
 {
-    /* left-align tables' cells */
-    text-align: left;
-    font-size: 200%;
+    /* center-align tables' cells */
+    text-align: center;
+    font-size: 100%;
 }
 
 h1

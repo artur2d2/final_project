@@ -24,3 +24,5 @@ ch 0x1337F
 d 0x130A7
 dj 0x13193
 l 0x130ED
+
+Note: the characters kh, sh and dj where deleted from the database file.
