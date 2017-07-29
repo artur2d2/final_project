@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    History
+{% endblock %}
+
+{% block main %}
+    <table style="width:100%">
+        <tr style="border-bottom:1pt solid black">
+            <th>Phonogram</th>
+        </tr>
+        {% for his in hist %}
+        <tr style="border-bottom:1pt solid black" style="overflow:auto">
+            <td>{{his["phonogram"]}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
